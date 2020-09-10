@@ -19,6 +19,6 @@ app.get("/", (req, res) => {
     res.send("HelloFromHomePage")
 });
 
-app.listen(5000, () => {
+app.listen(process.env.PORT || 5000, () => {
     console.log(`Open up http://localhost:${5000}`);
 });
