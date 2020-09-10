@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import User from "../Models/User.js";
 
-export const SignupUser = (req, res, next) => {
+export const SignupUser = (req, res) => {
     User.find({
             email: req.body.email,
         })
@@ -45,7 +45,7 @@ export const SignupUser = (req, res, next) => {
         });
 };
 
-export const LoginUser = (req, res, next) => {
+export const LoginUser = (req, res) => {
     User.find({
             email: req.body.email,
         })
@@ -89,7 +89,7 @@ export const LoginUser = (req, res, next) => {
         });
 };
 
-export const DeleteUser = (req, res, next) => {
+export const DeleteUser = (req, res) => {
     User.remove({
             _id: req.params.userId,
         })
