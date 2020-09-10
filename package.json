@@ -1,0 +1,23 @@
+{
+  "name": "GremAPI",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/SteveGremory/GremAPI.git",
+  "author": "Steve Gremory <38187217+SteveGremory@users.noreply.github.com>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.1.3",
+    "ipfs": "^0.50.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.4",
+    "nodemon": "^2.0.4",
+    "typescript": "^4.0.2"
+  }
+}
