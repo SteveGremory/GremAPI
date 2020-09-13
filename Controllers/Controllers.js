@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import User from "../Models/User.js";
+import Post from '../Models/Post.js'
+import { IPFSupload } from "./IPFSfunc.js";
 
 export const SignupUser = (req, res) => {
     User.find({
@@ -106,3 +108,16 @@ export const DeleteUser = (req, res) => {
             });
         });
 };
+
+export const uploadPost = (req, res) => {
+    IPFSupload(post = new Post({
+        _id: new mongoose.Types.ObjectId(),
+        text: req.body.text,
+        image: req.files,
+        timestamp: req.body.timestamp
+    }))
+}
+
+export const getFromIPFS = (req, res) => {
+    
+}

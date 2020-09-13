@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import authRoutes from "./Routes/authRoutes.js";
+import contentRoutes from './Routes/contentRoutes.js'
 //import {checkVPN} from "./Middleware/Check-VPN.js"
 
 import mongoose from 'mongoose';
@@ -15,8 +16,10 @@ app.use(bodyParser.json());
 
 app.use('/users', authRoutes)
 
+app.use('/api/content', contentRoutes)
+
 app.get("/", (req, res) => {
-    res.send("HelloFromHomePage")
+    res.send("Welcome To The Grem API!")
 });
 
 app.listen(process.env.PORT || 5000, () => {
