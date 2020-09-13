@@ -1,10 +1,13 @@
-import axios from 'axios'
+import AvionDB from "aviondb";
+import IPFS from "ipfs";
 
-async function getThreatData(ipOverHere) {
-    const KEY = '2791565e89c908ef6ac6f2bddbeab2614910a35191e4c847baa1dbee'
-    let res = await axios.get(`https://api.ipdata.co/${ipOverHere}/threat?api-key=${KEY}`).then().catch(Error);
-    let data = res.data;
-    return userThreatInfo = data;
+const initAvion = async () => {
+  const ipfs = await IPFS.create();
+
+  // Creates a db named "DatabaseName" in the ".aviondb" directory in the project root.
+  const aviondb = await AvionDB.init("Grem", ipfs);
+
+  // Creates a Collection named "Users"
+  const collection = await aviondb.initCollection("Users");
 }
-
-getThreatData('8.8.8.8')
+initAvion();

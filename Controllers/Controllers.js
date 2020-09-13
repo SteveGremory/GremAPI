@@ -110,12 +110,13 @@ export const DeleteUser = (req, res) => {
 };
 
 export const uploadPost = (req, res) => {
-    IPFSupload(post = new Post({
+    post = new Post({
         _id: new mongoose.Types.ObjectId(),
         text: req.body.text,
         image: req.files,
         timestamp: req.body.timestamp
-    }))
+    })
+    
 }
 
 export const getFromIPFS = (req, res) => {
