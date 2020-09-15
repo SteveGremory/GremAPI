@@ -14,10 +14,10 @@ export const SignupUser = (req, res) => {
     .then((user) => {
       if (user.length >= 1) {
         return res.status(409).json({
-          message: "Mail/Username exists",
+          message: "This email/username is associated with another account. ",
         });
       } else {
-        bcrypt.hash(req.body.password, 13, (err, hash) => {
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
           if (err) {
             return res.status(500).json({
               error: err,
@@ -34,7 +34,7 @@ export const SignupUser = (req, res) => {
               .then((result) => {
                 console.log(result);
                 res.status(201).json({
-                  message: "User created",
+                  message: "User created!",
                 });
               })
               .catch((err) => {
