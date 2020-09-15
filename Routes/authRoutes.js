@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/login", LoginUser, checkAuth);
-router.post("/signup", createAccountLimiter, SignupUser)
+router.post("/signup", SignupUser)
 router.post("/:userId", DeleteUser)
 
 export default router;
