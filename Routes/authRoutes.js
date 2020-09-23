@@ -1,14 +1,10 @@
 import {
-  LoginUser,
-  SignupUser,
-  DeleteUser
+  LogInIPFS,
+  SignUpIPFS,
+  DeleteUser,
 } from "../Controllers/Controllers.js";
-import {
-  checkAuth
-} from '../Middleware/Check-Auth.js'
-import {
-  createAccountLimiter
-} from '../Middleware/Account-Limiter.js'
+import { checkAuth } from "../Middleware/Check-Auth.js";
+import { createAccountLimiter } from "../Middleware/Account-Limiter.js";
 
 import express from "express";
 
@@ -18,8 +14,8 @@ router.get("/", (req, res) => {
   res.send("hello");
 });
 
-router.post("/login", LoginUser, checkAuth);
-router.post("/signup", SignupUser)
-router.post("/:userId", DeleteUser)
+router.post("/login", createAccountLimiter, LogInIPFS, checkAuth);
+router.post("/signup", SignUpIPFS);
+router.post("/:userId", DeleteUser);
 
 export default router;

@@ -1,9 +1,8 @@
-import express from 'express'
-import Post from '../Models/Post.js'
-import {uploadPost} from '../Controllers/Controllers.js'
+import express from "express";
+import Post from "../Models/Post.js";
 
 const router = express.Router();
 
-router.post("/post", uploadPost)
+router.post("/post");
 
 export default router;
