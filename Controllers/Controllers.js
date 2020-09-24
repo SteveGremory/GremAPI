@@ -34,7 +34,7 @@ export const SignUpIPFS = async (req, res) => {
   }
   if ((await findIfUserExists) == null) {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    await collection
+    const usr = await collection
       .insertOne({
         uid: uuidv4(),
         email: req.body.email,
@@ -172,5 +172,13 @@ export const GetUser = async (req, res) => {
   console.log(UserInfo);
   res.status(201).json({
     message: UserInfo,
+  });
+};
+
+export const GetUID = async (req, res) => {
+  const collection = await getAvionCollection();
+  const userUID = await collection.findOne({ email: req.body.email });
+  res.status(201).json({
+    message: userUID["uid"],
   });
 };
