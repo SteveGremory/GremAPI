@@ -129,13 +129,11 @@ export const UploadPost = async (req, res) => {
     },
     {
       $addToSet: {
-        posts: [
-          {
-            id: req.body.id,
-            text: req.body.text,
-            image: req.body.image, //logic to get image data
-          },
-        ],
+        posts: {
+          id: req.body.id,
+          text: req.body.text,
+          image: req.body.image, //logic to get image data
+        },
       },
     }
   );
@@ -150,4 +148,13 @@ export const UploadPost = async (req, res) => {
     });
   }
   console.log(test);
+};
+
+export const GetPosts = async (req, res) => {
+  const collection = await getAvionCollection();
+  const UserPosts = collection.findOne({ uid: req.body.uid });
+  console.log(UserPosts["posts"]);
+  res.status(201).json({
+    message: UserPosts,
+  });
 };
