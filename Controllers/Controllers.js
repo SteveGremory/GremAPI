@@ -40,7 +40,10 @@ export const SignUpIPFS = async (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         username: req.body.username,
-        avatar: {},
+        avatar: {
+          uri:
+            "https://drive.google.com/file/d/1G_STYSZaCXe95kgmFfQOUTj7k-hl8K4t/view?usp=sharing",
+        },
         posts: [],
       })
       .then((result) => {
@@ -181,4 +184,35 @@ export const GetUID = async (req, res) => {
   res.status(201).json({
     message: userUID["uid"],
   });
+};
+export const ChangePFP = async (req, res) => {
+  const collection = await getAvionCollection();
+  const userInfo = await collection.findOne({ email: req.body.email });
+  const userUID = userInfo["uid"];
+  if (req.body.avatar == "" || null) {
+    res.status(403).json({
+      message: "A New Avatar is required.",
+    });
+  }
+  await collection
+    .findOneAndUpdate(
+      {
+        uid: userUID,
+      },
+      {
+        $set: {
+          avatar: { uri: req.body.avatar },
+        },
+      }
+    )
+    .then((result) => {
+      res.status(201).json({
+        message: "Profile Picture Updated!",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: err,
+      });
+    });
 };
