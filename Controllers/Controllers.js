@@ -138,7 +138,7 @@ export const UploadPost = async (req, res) => {
       message: "Upload failed!",
     });
   }
-  if (req.body.image == undefined || "") {
+  if (req.body.image == undefined) {
     res.status(500).json({
       message: "Upload failed!",
     });
