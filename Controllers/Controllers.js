@@ -166,11 +166,11 @@ export const UploadPost = async (req, res) => {
   }
 };
 
-export const GetPosts = async (req, res) => {
+export const GetUser = async (req, res) => {
   const collection = await getAvionCollection();
-  const UserPosts = await collection.findOne({ uid: req.body.uid });
-  console.log(UserPosts["posts"]);
+  const UserInfo = await collection.findOne({ uid: req.body.uid });
+  console.log(UserInfo);
   res.status(201).json({
-    message: UserPosts["posts"],
+    message: UserInfo,
   });
 };
