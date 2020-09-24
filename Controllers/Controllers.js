@@ -40,8 +40,10 @@ export const SignUpIPFS = async (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         username: req.body.username,
-        avatar:
-          "https://lh6.googleusercontent.com/cNQN_8M4NkI98v6GoVN9ZghMGc4_0fZX8yJ8owbjuEndKGZ4IFliBP6VO2dBb49qUNB7oIJJH7grssD4kltH=w3360-h1828",
+        avatar: {
+          uri:
+            "https://lh6.googleusercontent.com/cNQN_8M4NkI98v6GoVN9ZghMGc4_0fZX8yJ8owbjuEndKGZ4IFliBP6VO2dBb49qUNB7oIJJH7grssD4kltH=w3360-h1828",
+        },
         userFollowers: 0,
         userFollowing: 0,
         posts: [],
