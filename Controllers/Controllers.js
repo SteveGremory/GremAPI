@@ -42,7 +42,7 @@ export const SignUpIPFS = async (req, res) => {
         username: req.body.username,
         avatar: {
           uri:
-            "https://lh6.googleusercontent.com/cNQN_8M4NkI98v6GoVN9ZghMGc4_0fZX8yJ8owbjuEndKGZ4IFliBP6VO2dBb49qUNB7oIJJH7grssD4kltH=w3360-h1828",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQXBI4OyBdatLrVutR2Ku7CXGTVb5MOq5BBQA&usqp=CAU",
         },
         userFollowers: 0,
         userFollowing: 0,
