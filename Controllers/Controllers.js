@@ -42,8 +42,10 @@ export const SignUpIPFS = async (req, res) => {
         username: req.body.username,
         avatar: {
           uri:
-            "https://drive.google.com/file/d/1G_STYSZaCXe95kgmFfQOUTj7k-hl8K4t/view?usp=sharing",
+            "https://lh6.googleusercontent.com/cNQN_8M4NkI98v6GoVN9ZghMGc4_0fZX8yJ8owbjuEndKGZ4IFliBP6VO2dBb49qUNB7oIJJH7grssD4kltH=w3360-h1828",
         },
+        userFollowers: 0,
+        userFollowing: 0,
         posts: [],
       })
       .then((result) => {
@@ -201,7 +203,7 @@ export const ChangePFP = async (req, res) => {
       },
       {
         $set: {
-          avatar: { uri: req.body.avatar },
+          avatar: req.body.avatar,
         },
       }
     )
