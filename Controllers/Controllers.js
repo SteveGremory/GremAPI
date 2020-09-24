@@ -123,38 +123,54 @@ export const DeleteUser = (req, res) => {
 
 export const UploadPost = async (req, res) => {
   const collection = await getAvionCollection();
-  const test = await collection.findOneAndUpdate(
-    {
-      uid: req.body.uid,
-    },
-    {
-      $addToSet: {
-        posts: {
-          id: req.body.id,
-          text: req.body.text,
-          image: req.body.image, //logic to get image data
-        },
-      },
-    }
-  );
-  if (test == null) {
+  if (req.body.id == undefined || "") {
     res.status(500).json({
-      message: "Upload Failed...",
+      message: "Upload failed!",
     });
   }
-  if (test != null) {
-    res.status(200).json({
-      message: "Upload Successful!",
+  if (req.body.text == undefined || "") {
+    res.status(500).json({
+      message: "Upload failed!",
     });
   }
-  console.log(test);
+  if (req.body.image == undefined || "") {
+    res.status(500).json({
+      message: "Upload failed!",
+    });
+  } else {
+    const test = await collection.findOneAndUpdate(
+      {
+        uid: req.body.uid,
+      },
+      {
+        $addToSet: {
+          posts: {
+            id: req.body.id,
+            text: req.body.text,
+            image: req.body.image, //logic to get image data
+          },
+        },
+      }
+    );
+    if (test == null) {
+      res.status(500).json({
+        message: "Upload Failed...",
+      });
+    }
+    if (test != null) {
+      res.status(200).json({
+        message: "Upload Successful!",
+      });
+    }
+    console.log(test);
+  }
 };
 
 export const GetPosts = async (req, res) => {
   const collection = await getAvionCollection();
-  const UserPosts = collection.findOne({ uid: req.body.uid });
+  const UserPosts = await collection.findOne({ uid: req.body.uid });
   console.log(UserPosts["posts"]);
   res.status(201).json({
-    message: UserPosts,
+    message: UserPosts["posts"],
   });
 };
