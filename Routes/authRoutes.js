@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
   res.send("hello");
 });
 
-router.post("/login", createAccountLimiter, LogInIPFS, checkAuth);
+router.post("/login", LogInIPFS, checkAuth);
 router.post("/signup", SignUpIPFS);
 router.post("/:userId", DeleteUser);
 
