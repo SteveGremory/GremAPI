@@ -74,9 +74,7 @@ export const LogInIPFS = async (req, res) => {
     return res.status(401).json({
       message: "Auth failed",
     });
-  }
-
-  if ((await findUserByEmail) != null) {
+  } else if ((await findUserByEmail) != null) {
     bcrypt.compare(req.body.password, findPasswordHash, (err, result) => {
       if (err) {
         return res.status(401).json({
