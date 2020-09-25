@@ -34,7 +34,7 @@ export const SignUpIPFS = async (req, res) => {
   }
   if ((await findIfUserExists) == null) {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const usr = await collection
+    await collection
       .insertOne({
         uid: uuidv4(),
         email: req.body.email,
@@ -46,6 +46,8 @@ export const SignUpIPFS = async (req, res) => {
         },
         userFollowers: 0,
         userFollowing: 0,
+        following: [],
+        followers: [],
         posts: [],
       })
       .then((result) => {
@@ -185,6 +187,7 @@ export const GetUID = async (req, res) => {
     message: userUID["uid"],
   });
 };
+
 export const ChangePFP = async (req, res) => {
   const collection = await getAvionCollection();
   const userInfo = await collection.findOne({ email: req.body.email });
@@ -215,4 +218,13 @@ export const ChangePFP = async (req, res) => {
         message: err,
       });
     });
+};
+
+export const FindByUsername = async (req, res) => {
+  const collection = await getAvionCollection();
+  var results = await collection.find({ username: req.body.username });
+  res.status(201).json({
+    message: results,
+  });
+  console.log(results);
 };
