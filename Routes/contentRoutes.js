@@ -5,6 +5,7 @@ import {
   GetUID,
   ChangePFP,
   FindByUsername,
+  FollowUser,
 } from "../Controllers/Controllers.js";
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.post("/getuser", GetUser);
 router.post("/getuid", GetUID);
 router.post("/changepfp", ChangePFP);
 router.post("/findbyusername", FindByUsername);
+router.post("/follow", FollowUser);
 
 export default router;

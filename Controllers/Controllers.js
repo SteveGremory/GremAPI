@@ -20,19 +20,30 @@ export const getAvionCollection = async () => {
 
 export const SignUpIPFS = async (req, res) => {
   const collection = await getAvionCollection();
-  var findIfUserExists = await collection.findOne({
+  const findIfUserExistsEmail = await collection.findOne({
     email: req.body.email,
+  });
+  const findIfUserExistsUsername = await collection.findOne({
     username: req.body.username,
   });
+  console.log(findIfUserExistsEmail);
+  console.log(findIfUserExistsUsername);
 
   //console.log(findIfUserExists); {JUST FOR VERBOSING}
 
-  if ((await findIfUserExists) != null) {
+  if (findIfUserExistsEmail != null) {
     return res.status(409).json({
       message: "This email/username is associated with another account. ",
     });
   }
-  if ((await findIfUserExists) == null) {
+  if (findIfUserExistsUsername != null) {
+    return res.status(409).json({
+      message: "This email/username is associated with another account. ",
+    });
+  } else if (
+    findIfUserExistsEmail == null &&
+    findIfUserExistsUsername == null
+  ) {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     await collection
       .insertOne({
@@ -46,6 +57,7 @@ export const SignUpIPFS = async (req, res) => {
         },
         userFollowers: 0,
         userFollowing: 0,
+        postsNumber: 0,
         following: [],
         followers: [],
         posts: [],
@@ -227,4 +239,19 @@ export const FindByUsername = async (req, res) => {
     message: results,
   });
   console.log(results);
+};
+
+export const FollowUser = async (req, res) => {
+  const collection = await getAvionCollection();
+  //find the person and add the follower
+  const getFollower = await collection.findOne({ uid: req.body.followerUID });
+  console.log(getFollower);
+  const following = await collection.findOneAndUpdate(
+    { username: req.body.followingUsername },
+    { $addToSet: { followers: getFollower } }
+  );
+  const follower = await collection.findOneAndUpdate(
+    { uid: req.body.followerUID },
+    { $addToSet: {} }
+  );
 };
