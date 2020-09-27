@@ -202,7 +202,7 @@ export const GetUID = async (req, res) => {
 
 export const ChangePFP = async (req, res) => {
   const collection = await getAvionCollection();
-  const userInfo = await collection.findOne({ email: req.body.email });
+  const userInfo = await collection.findOne({ uid: req.body.uid });
   const userUID = userInfo["uid"];
   if (req.body.avatar == "" || null) {
     res.status(403).json({
