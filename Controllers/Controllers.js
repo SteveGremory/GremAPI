@@ -202,8 +202,6 @@ export const GetUID = async (req, res) => {
 
 export const ChangePFP = async (req, res) => {
   const collection = await getAvionCollection();
-  const userInfo = await collection.findOne({ uid: req.body.uid });
-  const userUID = userInfo["uid"];
   if (req.body.avatar == "" || null) {
     res.status(403).json({
       message: "A New Avatar is required.",
@@ -212,7 +210,7 @@ export const ChangePFP = async (req, res) => {
   await collection
     .findOneAndUpdate(
       {
-        uid: userUID,
+        uid: req.body.uid,
       },
       {
         $set: {
