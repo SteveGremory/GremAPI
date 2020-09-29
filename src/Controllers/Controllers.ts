@@ -136,29 +136,24 @@ export const UploadPost = async (req, res) => {
       message: "Upload failed!",
     });
   } else {
-    const NumberPosts = collection.findOne({ uid: req.body.uid });
-    const count = Object.keys(NumberPosts.posts).length;
+    const NumberPosts = await collection.findOne({ uid: req.body.uid });
+    const count = NumberPosts.posts.length;
     const test = await collection.findOneAndUpdate(
       {
         uid: req.body.uid,
       },
       {
-        $and: [
-          {
-            $addToSet: {
-              posts: {
-                id: req.body.id,
-                text: req.body.text,
-                image: req.body.image, //logic to get image data
-              },
-            },
-            $set: {
-              postsNumber: count,
-            },
+        $addToSet: {
+          posts: {
+            id: req.body.id,
+            text: req.body.text,
+            image: req.body.image, //logic to get image data
           },
-        ],
+        },
       }
     );
+    console.log(test);
+
     if (test == null) {
       res.status(500).json({
         message: "Upload Failed...",
@@ -169,6 +164,16 @@ export const UploadPost = async (req, res) => {
         message: "Upload Successful!",
       });
     }
+    await collection.findOneAndUpdate(
+      {
+        uid: req.body.uid,
+      },
+      {
+        $set: {
+          postsNumber: count,
+        },
+      }
+    );
   }
 };
 //for finding a user by their uid
@@ -232,42 +237,45 @@ export const FollowUser = async (req, res) => {
   const getFollowing = await collection.findOne({
     username: req.body.followingUsername,
   }); // get person 2's details by their Username
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
   await collection
     .findOneAndUpdate(
       { username: req.body.followingUsername },
-      {
-        $and: [
-          { $addToSet: { following: getFollower.uid } },
-          { $inc: { userFollowers: 1 } },
-        ],
-      }
+
+      { $addToSet: { following: getFollower.uid } }
     )
-    .then(async (result) => {
+    .then((result) => {
       res.status(200).json({ message: "Added UID to person" });
     })
     .catch((err) => {
       res.status(500);
     }); //put the follower's name in the second person's account
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  await collection.findOneAndUpdate(
+    { username: req.body.followingUsername },
+    { $inc: { userFollowers: 1 } }
+  );
+
   await collection
     .findOneAndUpdate(
       { username: req.body.followerUsername },
       {
-        $and: [
-          { $addToSet: { followers: getFollowing.uid } },
-          { $inc: { userFollowing: 1 } },
-        ],
+        $addToSet: { followers: getFollowing.uid },
       }
     )
-    .then(async (result) => {
+    .then((result) => {
       res.status(200);
     })
     .catch((err) => {
       res.status(500);
     });
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  await collection.findOneAndUpdate(
+    { username: req.body.followerUsername },
+    { $inc: { userFollowing: 1 } }
+  );
+
   console.log(getFollower);
+  console.log(getFollowing);
 };
 //TODO: get the posts of the people a user is following. this will be done by their UID as well.
 export const GetFollowingPosts = async (req, res) => {
