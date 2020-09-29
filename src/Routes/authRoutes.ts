@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/login", LogInIPFS, checkAuth);
-router.post("/signup", SignUpIPFS);
+router.post("/signup", SignUpIPFS, checkAuth);
 //router.post("/:userId", DeleteUser);
 
 export default router;
