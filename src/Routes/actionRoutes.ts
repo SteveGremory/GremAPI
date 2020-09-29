@@ -11,11 +11,11 @@ import { checkAuth } from "../Middleware/Check-Auth";
 
 const router = express.Router();
 
-router.post("/post", UploadPost, checkAuth);
-router.post("/getuser", GetUser, checkAuth);
-router.post("/getuid", GetUID, checkAuth);
-router.post("/changepfp", ChangePFP, checkAuth);
-router.post("/findbyusername", FindByUsername, checkAuth);
-router.post("/follow", FollowUser, checkAuth);
+router.post("/post", UploadPost);
+router.post("/getuser", GetUser);
+router.post("/getuid", GetUID);
+router.post("/changepfp", ChangePFP);
+router.post("/findbyusername", FindByUsername);
+router.post("/follow", FollowUser);
 
 export default router;
