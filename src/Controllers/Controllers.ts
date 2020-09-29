@@ -273,9 +273,6 @@ export const FollowUser = async (req, res) => {
     { username: req.body.followerUsername },
     { $inc: { userFollowing: 1 } }
   );
-
-  console.log(getFollower);
-  console.log(getFollowing);
 };
 //TODO: get the posts of the people a user is following. this will be done by their UID as well.
 export const GetFollowingPosts = async (req, res) => {
