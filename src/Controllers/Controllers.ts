@@ -101,10 +101,7 @@ export const LogInIPFS = async (req, res) => {
             email: findUserByEmail["email"],
             userId: userUID,
           },
-          process.env.JWT_KEY,
-          {
-            expiresIn: "1h",
-          }
+          process.env.JWT_KEY
         );
         return res.status(200).json({
           message: "Auth successful",
