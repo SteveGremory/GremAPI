@@ -4,6 +4,7 @@ import IPFS from "ipfs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import "body-parser";
+//TODO: IMPLEMENT TYPES.
 
 var collection;
 //initialises AvionDB
@@ -26,8 +27,6 @@ export const SignUpIPFS = async (req, res) => {
   const findIfUserExistsUsername = await collection.findOne({
     username: req.body.username,
   });
-  console.log(findIfUserExistsEmail);
-  console.log(findIfUserExistsUsername);
 
   //console.log(findIfUserExists); {JUST FOR VERBOSING}
 
@@ -161,14 +160,12 @@ export const UploadPost = async (req, res) => {
         message: "Upload Successful!",
       });
     }
-    console.log(test);
   }
 };
 //for finding a user by their uid
 export const GetUser = async (req, res) => {
   const collection = await getAvionCollection();
   const UserInfo = await collection.findOne({ uid: req.body.uid });
-  console.log(UserInfo);
   res.status(201).json({
     message: UserInfo,
   });
@@ -214,24 +211,61 @@ export const FindByUsername = async (req, res) => {
   res.status(201).json({
     message: results,
   });
-  console.log(results);
 };
 //TODO: Follow Another User
 export const FollowUser = async (req, res) => {
+  //here, first person is the person who clicks on follow and the second person is who is getting followed.
   const collection = await getAvionCollection();
   //find the person and add the follower
-  const getFollower = await collection.findOne({ uid: req.body.followerUID });
+  const getFollower = await collection.findOne({
+    username: req.body.followerUsername,
+  }); //get person 1's details by their UID
+  const getFollowing = await collection.findOne({
+    username: req.body.followingUsername,
+  }); // get person 2's details by their Username
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  await collection
+    .findOneAndUpdate(
+      { username: req.body.followingUsername },
+      {
+        $and: [
+          { $addToSet: { following: getFollower.uid } },
+          { $inc: { userFollowers: 1 } },
+        ],
+      }
+    )
+    .then(async (result) => {
+      res.status(200).json({ message: "Added UID to person" });
+    })
+    .catch((err) => {
+      res.status(500);
+    }); //put the follower's name in the second person's account
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  await collection
+    .findOneAndUpdate(
+      { username: req.body.followerUsername },
+      {
+        $and: [
+          { $addToSet: { followers: getFollowing.uid } },
+          { $inc: { userFollowing: 1 } },
+        ],
+      }
+    )
+    .then(async (result) => {
+      res.status(200);
+    })
+    .catch((err) => {
+      res.status(500);
+    });
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
   console.log(getFollower);
-  const following = await collection.findOneAndUpdate(
-    { username: req.body.followingUsername },
-    { $addToSet: { followers: getFollower } }
-  );
-  const follower = await collection.findOneAndUpdate(
-    { uid: req.body.followerUID },
-    { $addToSet: {} }
-  );
 };
 //TODO: get the posts of the people a user is following. this will be done by their UID as well.
 export const GetFollowingPosts = async (req, res) => {
   console.log("TODO");
+};
+//TODO: get if the user is following the other user or not
+export const IsFollowing = async (req, res) => {
+  //here, first person is the person who clicks on follow and the second person is who is getting followed.
+  const collection = await getAvionCollection();
 };
