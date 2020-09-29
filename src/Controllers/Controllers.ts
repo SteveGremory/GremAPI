@@ -136,18 +136,27 @@ export const UploadPost = async (req, res) => {
       message: "Upload failed!",
     });
   } else {
+    const NumberPosts = collection.findOne({ uid: req.body.uid });
+    const count = Object.keys(NumberPosts.posts).length;
     const test = await collection.findOneAndUpdate(
       {
         uid: req.body.uid,
       },
       {
-        $addToSet: {
-          posts: {
-            id: req.body.id,
-            text: req.body.text,
-            image: req.body.image, //logic to get image data
+        $and: [
+          {
+            $addToSet: {
+              posts: {
+                id: req.body.id,
+                text: req.body.text,
+                image: req.body.image, //logic to get image data
+              },
+            },
+            $set: {
+              postsNumber: count,
+            },
           },
-        },
+        ],
       }
     );
     if (test == null) {
