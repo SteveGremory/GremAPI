@@ -1,7 +1,9 @@
 {
-    "env": {
-        "MONGO_ATLAS_PW": "user1:2006",
-        "JWT_KEY": "secret",
-        "IPDATA_API_KEY": "2791565e89c908ef6ac6f2bddbeab2614910a35191e4c847baa1dbee"
-    }
+  "env": {
+    "JWT_KEY": "secret",
+    "watch": ["src"],
+    "ext": "ts,json",
+    "ignore": ["src/**/*.spec.ts"],
+    "exec": "ts-node ./src/index.ts"
+  }
 }

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import "body-parser";
 
 var collection;
-
+//initialises AvionDB
 export const getAvionCollection = async () => {
   if (!collection) {
     const ipfs = await IPFS.create();
@@ -17,7 +17,7 @@ export const getAvionCollection = async () => {
     return collection;
   }
 };
-
+//Has the signup logic
 export const SignUpIPFS = async (req, res) => {
   const collection = await getAvionCollection();
   const findIfUserExistsEmail = await collection.findOne({
@@ -75,7 +75,7 @@ export const SignUpIPFS = async (req, res) => {
       });
   }
 };
-
+//has the login logic
 export const LogInIPFS = async (req, res) => {
   const collection = await getAvionCollection();
   var findUserByEmail = await collection.findOne({
@@ -119,25 +119,7 @@ export const LogInIPFS = async (req, res) => {
     });
   }
 };
-
-export const DeleteUser = (req, res) => {
-  User.remove({
-    _id: req.params.userId,
-  })
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "User deleted",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-};
-
+//adds a post to the user's profile; TODO: post id updates after every post.
 export const UploadPost = async (req, res) => {
   const collection = await getAvionCollection();
   if (req.body.id == undefined || "") {
@@ -182,7 +164,7 @@ export const UploadPost = async (req, res) => {
     console.log(test);
   }
 };
-
+//for finding a user by their uid
 export const GetUser = async (req, res) => {
   const collection = await getAvionCollection();
   const UserInfo = await collection.findOne({ uid: req.body.uid });
@@ -191,7 +173,7 @@ export const GetUser = async (req, res) => {
     message: UserInfo,
   });
 };
-
+//find a user by email and send back their uid
 export const GetUID = async (req, res) => {
   const collection = await getAvionCollection();
   const userUID = await collection.findOne({ email: req.body.email });
@@ -199,14 +181,10 @@ export const GetUID = async (req, res) => {
     message: userUID["uid"],
   });
 };
-
+//change a user's profile picture, by sending a user's uid
 export const ChangePFP = async (req, res) => {
   const collection = await getAvionCollection();
-  if (req.body.avatar == "" || null) {
-    res.status(403).json({
-      message: "A New Avatar is required.",
-    });
-  }
+
   await collection
     .findOneAndUpdate(
       {
@@ -214,7 +192,7 @@ export const ChangePFP = async (req, res) => {
       },
       {
         $set: {
-          avatar: req.body.avatar,
+          avatar: { uri: req.body.avatar },
         },
       }
     )
@@ -229,7 +207,7 @@ export const ChangePFP = async (req, res) => {
       });
     });
 };
-
+//find a user by their username.
 export const FindByUsername = async (req, res) => {
   const collection = await getAvionCollection();
   var results = await collection.find({ username: req.body.username });
@@ -238,7 +216,7 @@ export const FindByUsername = async (req, res) => {
   });
   console.log(results);
 };
-
+//TODO: Follow Another User
 export const FollowUser = async (req, res) => {
   const collection = await getAvionCollection();
   //find the person and add the follower
@@ -252,4 +230,8 @@ export const FollowUser = async (req, res) => {
     { uid: req.body.followerUID },
     { $addToSet: {} }
   );
+};
+//TODO: get the posts of the people a user is following. this will be done by their UID as well.
+export const GetFollowingPosts = async (req, res) => {
+  console.log("TODO");
 };

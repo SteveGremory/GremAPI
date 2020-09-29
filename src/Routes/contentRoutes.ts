@@ -6,7 +6,7 @@ import {
   ChangePFP,
   FindByUsername,
   FollowUser,
-} from "../Controllers/Controllers.js";
+} from "../Controllers/Controllers";
 
 const router = express.Router();
 

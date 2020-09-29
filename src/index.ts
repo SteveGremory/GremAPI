@@ -1,12 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
-import authRoutes from "./Routes/authRoutes.js";
-import contentRoutes from "./Routes/contentRoutes.js";
+import authRoutes from "./Routes/authRoutes";
+import contentRoutes from "./Routes/contentRoutes";
 //import {checkVPN} from "./Middleware/Check-VPN.js"
 
 const app = express();
 
-app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.json({ limit: "10mb" }));
 
 app.use("/api/users", authRoutes);
 
