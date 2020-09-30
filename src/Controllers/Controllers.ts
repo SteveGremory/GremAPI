@@ -50,11 +50,9 @@ export const SignUpIPFS = async (req, res) => {
         email: req.body.email,
         password: hashedPassword,
         username: req.body.username,
-        //fix avatar by removing the URI shit
-        avatar: {
-          uri:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQXBI4OyBdatLrVutR2Ku7CXGTVb5MOq5BBQA&usqp=CAU",
-        },
+        avatar:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQXBI4OyBdatLrVutR2Ku7CXGTVb5MOq5BBQA&usqp=CAU",
+
         userFollowers: 0,
         userFollowing: 0,
         postsNumber: 0,
