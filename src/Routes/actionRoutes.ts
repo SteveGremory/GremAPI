@@ -6,6 +6,7 @@ import {
   ChangePFP,
   FindByUsername,
   FollowUser,
+  SearchUser,
 } from "../Controllers/Controllers";
 import { checkAuth } from "../Middleware/Check-Auth";
 
@@ -17,5 +18,6 @@ router.post("/getuid", GetUID);
 router.post("/changepfp", ChangePFP);
 router.post("/findbyusername", FindByUsername);
 router.post("/follow", FollowUser);
+router.post("/search-user", SearchUser);
 
 export default router;

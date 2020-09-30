@@ -229,6 +229,14 @@ export const FindByUsername = async (req, res) => {
     message: results,
   });
 };
+
+export const SearchUser = async (req, res) => {
+  const collection = await getAvionCollection();
+  var results = await collection.find({ username: req.body.username });
+  res.status(201).json({
+    message: results,
+  });
+};
 //TODO: UPDATE USER STATS: https://discordapp.com/channels/616677539812868097/693051173300731914/760412761934790676
 export const FollowUser = async (req, res) => {
   //here, first person is the person who clicks on follow and the second person is who is getting followed.
