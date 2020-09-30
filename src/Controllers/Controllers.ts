@@ -224,7 +224,7 @@ export const ChangePFP = async (req, res) => {
 //find a user by their username.
 export const FindByUsername = async (req, res) => {
   const collection = await getAvionCollection();
-  var results = await collection.find({ username: req.body.username });
+  var results = await collection.findOne({ username: req.body.username });
   res.status(201).json({
     message: results,
   });
