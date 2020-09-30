@@ -206,7 +206,7 @@ export const ChangePFP = async (req, res) => {
       },
       {
         $set: {
-          avatar: { uri: req.body.avatar },
+          avatar: req.body.avatar,
         },
       }
     )
