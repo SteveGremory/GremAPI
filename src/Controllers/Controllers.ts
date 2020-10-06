@@ -242,48 +242,74 @@ export const FollowUser = async (req, res) => {
   //here, first person is the person who clicks on follow and the second person is who is getting followed.
   const collection = await getAvionCollection();
   //find the person and add the follower
-  const getFollower = await collection.findOne({
-    username: req.body.followerUsername,
-  }); //get person 1's details by their UID
-  const getFollowing = await collection.findOne({
-    username: req.body.followingUsername,
-  }); // get person 2's details by their Username
-
-  await collection
-    .findOneAndUpdate(
-      { username: req.body.followingUsername },
-
-      { $addToSet: { following: getFollower.uid } }
-    )
-    .then((result) => {
-      res.status(200).json({ message: "Added UID to person" });
+  const getFollower = await collection
+    .findOne({
+      username: req.body.followerUsername,
     })
     .catch((err) => {
-      res.status(500);
-    }); //put the follower's name in the second person's account
-
-  await collection.findOneAndUpdate(
-    { username: req.body.followingUsername },
-    { $inc: { userFollowers: 1 } }
-  );
-
-  await collection
-    .findOneAndUpdate(
-      { username: req.body.followerUsername },
-      {
-        $addToSet: { followers: getFollowing.uid },
-      }
-    )
-    .then((result) => {
-      res.status(200);
+      res.status(500).json(err);
+    }); //get person 1's details by their UID
+  const getFollowing = await collection
+    .findOne({
+      username: req.body.followingUsername,
     })
     .catch((err) => {
-      res.status(500);
-    });
-  await collection.findOneAndUpdate(
-    { username: req.body.followerUsername },
-    { $inc: { userFollowing: 1 } }
-  );
+      res.status(500).json(err);
+    }); // get person 2's details by their Username
+  if (getFollower == "" || null) {
+    res.status(500);
+  }
+  if (getFollowing == "" || null) {
+    res.status(500);
+  } else if ((getFollower != "" || null) && (getFollowing != "" || null)) {
+    await collection
+      .findOneAndUpdate(
+        { username: req.body.followingUsername },
+        { $addToSet: { following: getFollower.uid } }
+      )
+      .then((result) => {
+        res.status(200).json({ message: "Added UID to person" });
+      })
+      .catch((err) => {
+        res.status(500);
+      }); //put the follower's name in the second person's account
+
+    await collection
+      .findOneAndUpdate(
+        { username: req.body.followerUsername },
+        {
+          $addToSet: { followers: getFollowing.uid },
+        }
+      )
+      .then((result) => {
+        res.status(200);
+      })
+      .catch((err) => {
+        res.status(500);
+      });
+
+    const countFollower = getFollower.followers.length;
+    await collection
+      .findOneAndUpdate(
+        { uid: getFollower.uid },
+        { $set: { userFollowers: countFollower } }
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+    //dfskjfhdlksjfhusdjfhglkjsdhfljkds,fhbksajd,fh
+    const countFollowing = getFollowing.following.length;
+    await collection
+      .findOneAndUpdate(
+        { uid: getFollowing.uid },
+        { $set: { userFollowing: countFollowing } }
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+    console.log(getFollower);
+    console.log(getFollowing);
+  }
 };
 //TODO: get the posts of the people a user is following. this will be done by their UID as well.
 export const GetFollowingPosts = async (req, res) => {
