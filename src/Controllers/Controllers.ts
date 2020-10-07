@@ -343,7 +343,7 @@ export const IsFollowing = async (req, res) => {
     res.status(500);
   } else if ((getFollower != "" || null) && (getFollowing != "" || null)) {
     if (getFollowerQuery.includes(getFollowing.uid) == true) {
-      res.status(409).json({ message: "true" }); //is following
+      res.status(200).json({ message: "true" }); //is following
     } else if (getFollowerQuery.includes(getFollower.uid) == false) {
       res.status(200).json({ message: "false" }); //isn't following
     }
