@@ -297,7 +297,7 @@ export const FollowUser = async (req, res) => {
       .catch((err) => {
         console.log(err);
       });
-    //dfskjfhdlksjfhusdjfhglkjsdhfljkds,fhbksajd,fh
+    //<br></br>
     const countFollowing = getFollowing.following.length;
     await collection
       .findOneAndUpdate(
@@ -307,8 +307,8 @@ export const FollowUser = async (req, res) => {
       .catch((err) => {
         console.log(err);
       });
-    console.log(getFollower);
-    console.log(getFollowing);
+    //console.log(getFollower) consle logs the result
+    //console.log(getFollowing) console logs the result
   }
 };
 //TODO: get the posts of the people a user is following. this will be done by their UID as well.
@@ -319,4 +319,33 @@ export const GetFollowingPosts = async (req, res) => {
 export const IsFollowing = async (req, res) => {
   //here, first person is the person who clicks on follow and the second person is who is getting followed.
   const collection = await getAvionCollection();
+  //find the person and add the follower
+  const getFollower = await collection
+    .findOne({
+      username: req.body.followerUsername,
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    }); //get person 1's details by their UID
+  const getFollowing = await collection
+    .findOne({
+      username: req.body.followingUsername,
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    }); // get person 2's details by their Username
+  const getFollowerQuery = getFollower.followers;
+  //console.log(getFollowerQuery); console logs the uid
+  if (getFollower == "" || null) {
+    res.status(500);
+  }
+  if (getFollowing == "" || null) {
+    res.status(500);
+  } else if ((getFollower != "" || null) && (getFollowing != "" || null)) {
+    if (getFollowerQuery.includes(getFollowing.uid) == true) {
+      res.status(409).json({ message: "true" }); //is following
+    } else if (getFollowerQuery.includes(getFollower.uid) == false) {
+      res.status(200).json({ message: "false" }); //isn't following
+    }
+  }
 };
