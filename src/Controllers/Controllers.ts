@@ -5,9 +5,8 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import "body-parser";
 //TODO: IMPLEMENT TYPES.
-
+//initialise AvionDB
 var collection;
-//initialises AvionDB
 export const getAvionCollection = async () => {
   if (!collection) {
     const ipfs = await IPFS.create();
@@ -121,7 +120,7 @@ export const LogInIPFS = async (req, res) => {
     });
   }
 };
-//adds a post to the user's profile; TODO: post id updates after every post.
+//adds a post to the user's profile; TODO: comments system
 export const UploadPost = async (req, res) => {
   const collection = await getAvionCollection();
   if (req.body.id == undefined || "") {
@@ -148,6 +147,7 @@ export const UploadPost = async (req, res) => {
       {
         $addToSet: {
           posts: {
+            uid: uuidv4(),
             id: req.body.id,
             text: req.body.text,
             image: req.body.image, //logic to get image data
@@ -229,7 +229,7 @@ export const FindByUsername = async (req, res) => {
     message: results,
   });
 };
-
+//search user, obvio lol
 export const SearchUser = async (req, res) => {
   const collection = await getAvionCollection();
   var results = await collection.find({ username: req.body.username });
@@ -348,4 +348,29 @@ export const IsFollowing = async (req, res) => {
       res.status(200).json({ message: "false" }); //isn't following
     }
   }
+};
+//not working yet: TODO
+export const UnfollowUser = async (req, res) => {
+  //here, first person is the person who clicks on follow and the second person is who is getting followed.
+  const collection = await getAvionCollection();
+  //find the person and add the follower
+  const getFollower = await collection
+    .findOne({
+      username: req.body.followerUsername,
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    }); //get person 1's details by their UID
+  const getFollowing = await collection
+    .findOne({
+      username: req.body.followingUsername,
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    }); // get person 2's details by their Username
+  const personOneArray = getFollower.following;
+  const personTwoArray = getFollowing.uid;
+
+  //arr.filter(e => e !== 'B');
+  const UpdatedArray = 0; //code here
 };
