@@ -9,7 +9,6 @@ import { createModuleResolutionCache } from "typescript";
 //TODO: IMPLEMENT TYPES.
 //initialise AvionDB
 var collection;
-var m = moment();
 export const getAvionCollection = async () => {
   if (!collection) {
     const ipfs = await IPFS.create();
@@ -152,7 +151,7 @@ export const UploadPost = async (req, res) => {
           posts: {
             postUID: uuidv4(),
             id: req.body.id,
-            timestamp: m.unix(),
+            timestamp: new Date().getTime(),
             text: req.body.text,
             image: req.body.image,
             likes: 0,
@@ -399,4 +398,13 @@ export const GetComments = async (req, res) => {
   } else {
     res.status(500).json({ message: "an error has occoured." });
   }
+};
+export const LikePost = async (req, res) => {
+  const collection = await getAvionCollection();
+  const uploaderProfile = await collection.findOne({
+    uid: req.body.uid,
+  });
+  const posts = uploaderProfile.posts;
+  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  const likes = foundValue[0].likes;
 };
