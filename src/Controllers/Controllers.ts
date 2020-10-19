@@ -4,9 +4,12 @@ import IPFS from "ipfs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import "body-parser";
+import moment from "moment";
+import { createModuleResolutionCache } from "typescript";
 //TODO: IMPLEMENT TYPES.
 //initialise AvionDB
 var collection;
+var m = moment();
 export const getAvionCollection = async () => {
   if (!collection) {
     const ipfs = await IPFS.create();
@@ -147,15 +150,24 @@ export const UploadPost = async (req, res) => {
       {
         $addToSet: {
           posts: {
-            uid: uuidv4(),
+            postUID: uuidv4(),
             id: req.body.id,
+            timestamp: m.unix(),
             text: req.body.text,
-            image: req.body.image, //logic to get image data
+            image: req.body.image,
+            likes: 0,
+            comments: [
+              {
+                uid: "384798472",
+                username: "PewDiePie",
+                comment: "Hello World this is a silly comment pls delete me.",
+              },
+            ],
+            commentsNumber: 0,
           },
         },
       }
     );
-    console.log(test);
 
     if (test == null) {
       res.status(500).json({
@@ -195,7 +207,7 @@ export const GetUID = async (req, res) => {
     message: userUID["uid"],
   });
 };
-//change a user's profile picture, by sending a user's uid
+//change a user's profile picture, by sending a user's uid - TODO
 export const ChangePFP = async (req, res) => {
   const collection = await getAvionCollection();
 
@@ -373,4 +385,18 @@ export const UnfollowUser = async (req, res) => {
 
   //arr.filter(e => e !== 'B');
   const UpdatedArray = 0; //code here
+};
+//TODO: get comments with user pfp, name and text for a specified picture
+export const GetComments = async (req, res) => {
+  const collection = await getAvionCollection();
+  const uploaderProfile = await collection.findOne({
+    uid: req.body.uid,
+  });
+  const posts = uploaderProfile.posts;
+  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  if (foundValue != "" || null) {
+    res.status(201).json({ message: foundValue[0].comments });
+  } else {
+    res.status(500).json({ message: "an error has occoured." });
+  }
 };
