@@ -399,6 +399,7 @@ export const GetComments = async (req, res) => {
     res.status(500).json({ message: "an error has occoured." });
   }
 };
+
 export const LikePost = async (req, res) => {
   const collection = await getAvionCollection();
   const uploaderProfile = await collection.findOne({
@@ -407,4 +408,13 @@ export const LikePost = async (req, res) => {
   const posts = uploaderProfile.posts;
   const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
   const likes = foundValue[0].likes;
+};
+
+export const PostComment = async (req, res) => {
+  const collection = await getAvionCollection();
+  const uploaderProfile = await collection.findOne({
+    uid: req.body.uid,
+  });
+  const posts = uploaderProfile.posts;
+  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
 };
