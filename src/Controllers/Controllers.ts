@@ -467,4 +467,16 @@ export const PostComment = async (req, res) => {
       console.log(err);
       res.status(500).json({ message: "failed to post comment." });
     });
+  const NumberComments = await collectionComments.findOne({ uid: commentsUID });
+  const count = NumberComments.posts.length;
+  await collection.findOneAndUpdate(
+    {
+      username: req.body.usernamePostOwner,
+    },
+    {
+      $set: {
+        commentsNumber: count,
+      },
+    }
+  );
 };
