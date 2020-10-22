@@ -146,6 +146,7 @@ export const LogInIPFS = async (req, res) => {
 };
 //adds a post to the user's profile; TODO: comments system
 export const UploadPost = async (req, res) => {
+  const collectionComments = await getAvionCollectionComments();
   const collection = await getAvionCollection();
   if (req.body.id == undefined || "") {
     res.status(500).json({
@@ -159,6 +160,11 @@ export const UploadPost = async (req, res) => {
   } else {
     const NumberPosts = await collection.findOne({ uid: req.body.uid });
     const count = NumberPosts.posts.length;
+    const commentInitialUID = uuidv4();
+    await collectionComments.insertOne({
+      uid: commentInitialUID,
+      commentsFinal: [],
+    });
     const test = await collection.findOneAndUpdate(
       {
         uid: req.body.uid,
@@ -172,18 +178,13 @@ export const UploadPost = async (req, res) => {
             text: req.body.text,
             image: req.body.image,
             likes: 0,
-            comments: [
-              {
-                uid: "384798472",
-                username: "PewDiePie",
-                comment: "Hello World this is a silly comment pls delete me.",
-              },
-            ],
+            comments: commentInitialUID,
             commentsNumber: 0,
           },
         },
       }
     );
+    console.log(test);
 
     if (test == null) {
       res.status(500).json({
@@ -405,13 +406,19 @@ export const UnfollowUser = async (req, res) => {
 //TODO: get comments with user pfp, name and text for a specified picture
 export const GetComments = async (req, res) => {
   const collection = await getAvionCollection();
+  const collectionComments = await getAvionCollectionComments();
   const uploaderProfile = await collection.findOne({
     uid: req.body.uid,
   });
   const posts = uploaderProfile.posts;
   const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  const commentUID = foundValue[0].comments;
   if (foundValue != "" || null) {
-    res.status(201).json({ message: foundValue[0].comments });
+    const comments = collectionComments
+      .findOne({ uid: commentUID })
+      .then((result) => {
+        res.status(201).json({ message: result.commentsFinal });
+      });
   } else {
     res.status(500).json({ message: "an error has occoured." });
   }
@@ -431,11 +438,33 @@ export const PostComment = async (req, res) => {
   //get the comment and the UID of the peep who posted the bloody thing,
   const collection = await getAvionCollection();
   const collectionComments = await getAvionCollectionComments();
-  const UserInfo = await collection.findOne({ username: "username" });
+  const uploaderProfile = await collection.findOne({
+    username: req.body.usernamePostOwner,
+  });
+  const posts = uploaderProfile.posts;
+  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  const commentsUID = foundValue[0].comments;
   const addComment = await collectionComments
-    .insertOne({
-      LOL: "lol",
+    .findOneAndUpdate(
+      {
+        uid: commentsUID,
+      },
+      {
+        $addToSet: {
+          commentsFinal: {
+            uid: req.body.posterUID,
+            comment: req.body.comment,
+            username: req.body.username,
+          },
+        },
+      }
+    )
+    .then((result) => {
+      res.status(200).json({ message: "Comment Added!" });
+      console.log(result);
     })
-    .then(res.status(200).json({ message: "DID IT JUST FUCKING WORK?" }));
-  console.log(addComment);
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ message: "failed to post comment." });
+    });
 };
