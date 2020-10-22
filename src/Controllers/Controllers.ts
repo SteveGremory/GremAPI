@@ -4,19 +4,40 @@ import IPFS from "ipfs";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import "body-parser";
-import moment from "moment";
+
 import { createModuleResolutionCache } from "typescript";
 //TODO: IMPLEMENT TYPES.
 //initialise AvionDB
+
 var collection;
-export const getAvionCollection = async () => {
-  if (!collection) {
+var collectionComments;
+var aviondb;
+const initIPFSandAvion = async () => {
+  if (!aviondb) {
     const ipfs = await IPFS.create();
-    const aviondb = await AvionDB.init("Grem", ipfs);
+    aviondb = await AvionDB.init("Grem", ipfs);
+    return aviondb;
+  } else {
+    return aviondb;
+  }
+};
+
+const getAvionCollection = async () => {
+  if (!collection) {
+    const aviondb = await initIPFSandAvion();
     collection = await aviondb.initCollection("Users");
     return collection;
   } else {
     return collection;
+  }
+};
+const getAvionCollectionComments = async () => {
+  if (!collectionComments) {
+    const aviondb = await initIPFSandAvion();
+    collectionComments = await aviondb.initCollection("Comments");
+    return collectionComments;
+  } else {
+    return collectionComments;
   }
 };
 //Has the signup logic
@@ -65,6 +86,7 @@ export const SignUpIPFS = async (req, res) => {
             text: "Welcome To Grem!",
             image:
               "https://images.pexels.com/photos/4101555/pexels-photo-4101555.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+            comments: [],
           },
         ],
       })
@@ -131,11 +153,6 @@ export const UploadPost = async (req, res) => {
     });
   }
   if (req.body.text == undefined || "") {
-    res.status(500).json({
-      message: "Upload failed!",
-    });
-  }
-  if (req.body.image == undefined) {
     res.status(500).json({
       message: "Upload failed!",
     });
@@ -411,10 +428,14 @@ export const LikePost = async (req, res) => {
 };
 
 export const PostComment = async (req, res) => {
+  //get the comment and the UID of the peep who posted the bloody thing,
   const collection = await getAvionCollection();
-  const uploaderProfile = await collection.findOne({
-    uid: req.body.uid,
-  });
-  const posts = uploaderProfile.posts;
-  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  const collectionComments = await getAvionCollectionComments();
+  const UserInfo = await collection.findOne({ username: "username" });
+  const addComment = await collectionComments
+    .insertOne({
+      LOL: "lol",
+    })
+    .then(res.status(200).json({ message: "DID IT JUST FUCKING WORK?" }));
+  console.log(addComment);
 };
