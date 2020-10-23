@@ -164,6 +164,7 @@ export const UploadPost = async (req, res) => {
     await collectionComments.insertOne({
       uid: commentInitialUID,
       commentsFinal: [],
+      commentsNumber: 0,
     });
     const test = await collection.findOneAndUpdate(
       {
@@ -177,18 +178,16 @@ export const UploadPost = async (req, res) => {
             timestamp: new Date().getTime(),
             text: req.body.text,
             image: req.body.image,
-            likes: 0,
             comments: commentInitialUID,
-            commentsNumber: 0,
           },
         },
       }
     );
-    console.log(test);
 
     if (test == null) {
       res.status(500).json({
         message: "Upload Failed...",
+        UID: commentInitialUID,
       });
     }
     if (test != null) {
@@ -461,22 +460,27 @@ export const PostComment = async (req, res) => {
     )
     .then((result) => {
       res.status(200).json({ message: "Comment Added!" });
-      console.log(result);
     })
     .catch((err) => {
       console.log(err);
       res.status(500).json({ message: "failed to post comment." });
     });
   const NumberComments = await collectionComments.findOne({ uid: commentsUID });
+
   const count = NumberComments.commentsFinal.length;
-  await collection.findOneAndUpdate(
-    {
-      username: req.body.usernamePostOwner,
-    },
-    {
-      $set: {
-        commentsNumber: count,
+  await collectionComments
+    .findOneAndUpdate(
+      {
+        uid: commentsUID,
       },
-    }
-  );
+      {
+        $set: {
+          commentsNumber: count,
+        },
+      }
+    )
+    .then((result) => {})
+    .catch((err) => {
+      console.log(err);
+    });
 };
