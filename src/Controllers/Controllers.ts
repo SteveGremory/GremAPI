@@ -413,10 +413,10 @@ export const GetComments = async (req, res) => {
   const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
   const commentUID = foundValue[0].comments;
   if (foundValue != "" || null) {
-    const comments = collectionComments
+    const comments = await collectionComments
       .findOne({ uid: commentUID })
       .then((result) => {
-        res.status(201).json({ message: result.commentsFinal });
+        res.status(201).json({ message: result });
       });
   } else {
     res.status(500).json({ message: "an error has occoured." });
