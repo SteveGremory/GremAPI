@@ -10,6 +10,8 @@ import {
   IsFollowing,
   GetComments,
   PostComment,
+  GetLikes,
+  LikePost,
 } from "../Controllers/Controllers";
 import { checkAuth } from "../Middleware/Check-Auth";
 
@@ -24,6 +26,8 @@ router.post("/follow", FollowUser);
 router.post("/search-user", SearchUser);
 router.post("/is-following", IsFollowing);
 router.post("/get-comments", GetComments);
+router.post("/get-likes", GetLikes);
+router.post("/like-post", LikePost);
 router.post("/post-comment", PostComment);
 
 export default router;

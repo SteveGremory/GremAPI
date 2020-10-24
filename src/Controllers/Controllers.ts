@@ -12,6 +12,7 @@ import { createModuleResolutionCache } from "typescript";
 var collection;
 var collectionComments;
 var aviondb;
+var collectionLikes;
 const initIPFSandAvion = async () => {
   if (!aviondb) {
     const ipfs = await IPFS.create();
@@ -38,6 +39,15 @@ const getAvionCollectionComments = async () => {
     return collectionComments;
   } else {
     return collectionComments;
+  }
+};
+const getAvionCollectionLikes = async () => {
+  if (!collectionLikes) {
+    const aviondb = await initIPFSandAvion();
+    collectionLikes = await aviondb.initCollection("Likes");
+    return collectionLikes;
+  } else {
+    return collectionLikes;
   }
 };
 //Has the signup logic
@@ -85,7 +95,7 @@ export const SignUpIPFS = async (req, res) => {
             id: "0",
             text: "Welcome To Grem!",
             image:
-              "https://images.pexels.com/photos/4101555/pexels-photo-4101555.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+              "https://images.pexels.com/photos/4101555/pexels-photo-4101555.jpeg",
             comments: [],
           },
         ],
@@ -147,6 +157,7 @@ export const LogInIPFS = async (req, res) => {
 //adds a post to the user's profile; TODO: comments system
 export const UploadPost = async (req, res) => {
   const collectionComments = await getAvionCollectionComments();
+  const collectionLikes = await getAvionCollectionLikes();
   const collection = await getAvionCollection();
   if (req.body.id == undefined || "") {
     res.status(500).json({
@@ -161,6 +172,13 @@ export const UploadPost = async (req, res) => {
     const NumberPosts = await collection.findOne({ uid: req.body.uid });
     const count = NumberPosts.posts.length;
     const commentInitialUID = uuidv4();
+    const likesInitialUID = uuidv4();
+
+    await collectionLikes.insertOne({
+      uid: likesInitialUID,
+      likesFinal: [],
+      likesNumber: 0,
+    });
     await collectionComments.insertOne({
       uid: commentInitialUID,
       commentsFinal: [],
@@ -179,6 +197,7 @@ export const UploadPost = async (req, res) => {
             text: req.body.text,
             image: req.body.image,
             comments: commentInitialUID,
+            likes: likesInitialUID,
           },
         },
       }
@@ -205,6 +224,7 @@ export const UploadPost = async (req, res) => {
         },
       }
     );
+    console.log(test);
   }
 };
 //for finding a user by their uid
@@ -422,15 +442,69 @@ export const GetComments = async (req, res) => {
     res.status(500).json({ message: "an error has occoured." });
   }
 };
-
+//TODO
 export const LikePost = async (req, res) => {
   const collection = await getAvionCollection();
+  const collectionLikes = await getAvionCollectionLikes();
   const uploaderProfile = await collection.findOne({
-    uid: req.body.uid,
+    username: req.body.usernamePostOwner,
   });
   const posts = uploaderProfile.posts;
   const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
-  const likes = foundValue[0].likes;
+  const likesUID = foundValue[0].likes;
+  const addLike = await collectionLikes
+    .findOneAndUpdate(
+      { uid: likesUID },
+      {
+        $addToSet: {
+          likesFinal: req.body.posterUID,
+        },
+      }
+    )
+    .then((result) => {
+      res.status(201).json({ message: "Liked!" });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "an error has occoured." });
+    });
+};
+export const GetLikes = async (req, res) => {
+  //get the UIDs of the peeps who have liked.
+  const collection = await getAvionCollection();
+  const collectionLikes = await getAvionCollectionLikes();
+  const uploaderProfile = await collection.findOne({
+    username: req.body.usernamePostOwner,
+  });
+  const posts = uploaderProfile.posts;
+  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  const likesUID = foundValue[0].likes;
+  if (foundValue != "" || null) {
+    const likes = await collectionLikes
+      .findOne({ uid: likesUID })
+      .then((result) => {
+        res.status(201).json({ message: result });
+      });
+  } else {
+    res.status(500).json({ message: "an error has occoured." });
+  }
+  const NumberLikes = await collectionLikes.findOne({ uid: likesUID });
+
+  const count = NumberLikes.likesFinal.length;
+  await collectionComments
+    .findOneAndUpdate(
+      {
+        uid: likesUID,
+      },
+      {
+        $set: {
+          likesNumber: count,
+        },
+      }
+    )
+    .then((result) => {})
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 export const PostComment = async (req, res) => {
