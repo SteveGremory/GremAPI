@@ -201,7 +201,6 @@ export const UploadPost = async (req, res) => {
         },
       }
     );
-    console.log(test);
 
     if (test == null) {
       res.status(500).json({
@@ -520,7 +519,6 @@ export const PostComment = async (req, res) => {
     username: req.body.usernamePostOwner,
   });
   const commenterInfo = await collection.findOne({ uid: req.body.posterUID });
-  console.log(commenterInfo);
   const posts = uploaderProfile.posts;
   const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
   const commentsUID = foundValue[0].comments;
