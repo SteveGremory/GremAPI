@@ -169,8 +169,6 @@ export const UploadPost = async (req, res) => {
       message: "Upload failed!",
     });
   } else {
-    const NumberPosts = await collection.findOne({ uid: req.body.uid });
-    const count = NumberPosts.posts.length;
     const commentInitialUID = uuidv4();
     const likesInitialUID = uuidv4();
 
@@ -183,6 +181,7 @@ export const UploadPost = async (req, res) => {
       uid: commentInitialUID,
       commentsFinal: [],
       commentsNumber: 0,
+      commentLikes: 0,
     });
     const test = await collection.findOneAndUpdate(
       {
@@ -192,7 +191,7 @@ export const UploadPost = async (req, res) => {
         $addToSet: {
           posts: {
             postUID: uuidv4(),
-            id: req.body.id,
+            id: Number(req.body.id),
             timestamp: new Date().getTime(),
             text: req.body.text,
             image: req.body.image,
@@ -202,11 +201,11 @@ export const UploadPost = async (req, res) => {
         },
       }
     );
+    console.log(test);
 
     if (test == null) {
       res.status(500).json({
         message: "Upload Failed...",
-        UID: commentInitialUID,
       });
     }
     if (test != null) {
@@ -214,17 +213,22 @@ export const UploadPost = async (req, res) => {
         message: "Upload Successful!",
       });
     }
-    await collection.findOneAndUpdate(
-      {
-        uid: req.body.uid,
-      },
-      {
-        $set: {
-          postsNumber: count,
+    const NumberPosts = await collection.findOne({ uid: req.body.uid });
+    const count = NumberPosts.posts.length;
+    if (count == null || "") {
+      console.log("PostsNull");
+    } else if (count != null || "") {
+      await collection.findOneAndUpdate(
+        {
+          uid: req.body.uid,
         },
-      }
-    );
-    console.log(test);
+        {
+          $set: {
+            postsNumber: count,
+          },
+        }
+      );
+    }
   }
 };
 //for finding a user by their uid
@@ -467,26 +471,6 @@ export const LikePost = async (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: "an error has occoured." });
     });
-};
-export const GetLikes = async (req, res) => {
-  //get the UIDs of the peeps who have liked.
-  const collection = await getAvionCollection();
-  const collectionLikes = await getAvionCollectionLikes();
-  const uploaderProfile = await collection.findOne({
-    username: req.body.usernamePostOwner,
-  });
-  const posts = uploaderProfile.posts;
-  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
-  const likesUID = foundValue[0].likes;
-  if (foundValue != "" || null) {
-    const likes = await collectionLikes
-      .findOne({ uid: likesUID })
-      .then((result) => {
-        res.status(201).json({ message: result });
-      });
-  } else {
-    res.status(500).json({ message: "an error has occoured." });
-  }
   const NumberLikes = await collectionLikes.findOne({ uid: likesUID });
 
   const count = NumberLikes.likesFinal.length;
@@ -507,6 +491,27 @@ export const GetLikes = async (req, res) => {
     });
 };
 
+export const GetLikes = async (req, res) => {
+  //get the UIDs of the peeps who have liked.
+  const collection = await getAvionCollection();
+  const collectionLikes = await getAvionCollectionLikes();
+  const uploaderProfile = await collection.findOne({
+    username: req.body.usernamePostOwner,
+  });
+  const posts = uploaderProfile.posts;
+  const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
+  const likesUID = foundValue[0].likes;
+  if (foundValue != "" || null) {
+    const likes = await collectionLikes
+      .findOne({ uid: likesUID })
+      .then((result) => {
+        res.status(201).json({ message: result });
+      });
+  } else {
+    res.status(500).json({ message: "an error has occoured." });
+  }
+};
+
 export const PostComment = async (req, res) => {
   //get the comment and the UID of the peep who posted the bloody thing,
   const collection = await getAvionCollection();
@@ -514,6 +519,8 @@ export const PostComment = async (req, res) => {
   const uploaderProfile = await collection.findOne({
     username: req.body.usernamePostOwner,
   });
+  const commenterInfo = await collection.findOne({ uid: req.body.posterUID });
+  console.log(commenterInfo);
   const posts = uploaderProfile.posts;
   const foundValue = posts.filter((obj) => obj.postUID === req.body.postUID);
   const commentsUID = foundValue[0].comments;
@@ -525,9 +532,10 @@ export const PostComment = async (req, res) => {
       {
         $addToSet: {
           commentsFinal: {
-            uid: req.body.posterUID,
+            uid: commenterInfo.uid,
             comment: req.body.comment,
-            username: req.body.username,
+            avatar: commenterInfo.avatar,
+            username: commenterInfo.username,
           },
         },
       }
